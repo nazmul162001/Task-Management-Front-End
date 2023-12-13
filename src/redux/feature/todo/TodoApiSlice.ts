@@ -36,13 +36,13 @@ const todoApi = api.injectEndpoints({
       invalidatesTags: ["Todo"],
     }),
     getTodoByCategory: builder.query({
-      query: ({ name, search }) => {
+      query: ({ status, search }) => {
         let url = "/api/v1/todos";
 
         let queryParameters = "";
 
-        if (name) {
-          queryParameters += `&name=${name}`;
+        if (status) {
+          queryParameters += `&status=${status}`;
         }
 
         if (search) {
