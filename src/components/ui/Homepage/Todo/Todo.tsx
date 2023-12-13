@@ -1,26 +1,51 @@
 "use client";
 
 import {
+  useCreateTodoMutation,
   useGetTodoByCategoryQuery,
   useUpdateTodosMutation,
 } from "@/redux/feature/todo/TodoApiSlice";
 import React, { ChangeEvent, useState } from "react";
+import { useForm } from "react-hook-form";
 
 /* eslint-disable @next/next/no-img-element */
 const Todo = () => {
   const [active, setActive] = useState("all");
+  const [searchValue, setSearchValue] = useState("");
+  const { register, handleSubmit, reset } = useForm();
 
   // console.log(checkedTodos);
 
   // get todos using status filtering
   const { data: todos, refetch } = useGetTodoByCategoryQuery({
     status: active === "all" ? undefined : active,
+    search: searchValue,
   });
 
   const [updateTodo] = useUpdateTodosMutation();
+  const [createTodo] = useCreateTodoMutation();
 
   // console.log(todos);
 
+  // create todo
+  const onSubmit = async (data: any) => {
+    try {
+      refetch();
+      await createTodo({
+        name: data.name,
+      });
+      refetch();
+      reset();
+    } catch (error) {
+      console.error("Error creating todo:", error);
+    }
+  };
+
+  // search Todo
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(event.target.value);
+    // console.log("Search value:", event.target.value);
+  };
   // update todo status
   const handleCheckboxClick = async (todoId: string) => {
     const todoToUpdate = todos?.data?.find((todo: any) => todo.id === todoId);
@@ -55,7 +80,7 @@ const Todo = () => {
         className="w-full h-96"
       ></div>
       {/* todo form  */}
-      <div className="w-2/5 h-auto left-1/2 right-1/2 transform -translate-x-1/2  absolute top-28">
+      <div className="w-4/5 md:w-3/5 lg:w-2/5 h-auto left-1/2 right-1/2 transform -translate-x-1/2  absolute top-10">
         <div>
           {/* todo top  */}
           <div className="flex items-center justify-between pb-10 ">
@@ -74,47 +99,54 @@ const Todo = () => {
           </div>
           {/* todo body  */}
           {/* add todo field  */}
-          <div className="py-5 bg-[#25273c] flex justify-between items-center gap-3 rounded">
-            <img className="w-8 ml-3" src="/addCircle2.svg" alt="" />
-            <input
-              type="text"
-              className="w-full bg-transparent border-none focus:outline-none text-white"
-              placeholder="Create a new todo"
-            />
-          </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="py-5 bg-[#25273c] flex justify-between items-center gap-3 rounded">
+              <img className="w-8 ml-3" src="/addCircle2.svg" alt="" />
+              <input
+                {...register("name")} // Registering input with React Hook Form
+                type="text"
+                className="w-full bg-transparent border-none focus:outline-none text-white"
+                placeholder="Create a new todo"
+              />
+            </div>
+          </form>
           {/* search todo  */}
           <div className="py-4 mt-5 bg-[#25273c] flex justify-between items-center gap-3 rounded-full px-5">
             <input
               type="text"
               className="w-full bg-transparent border-none focus:outline-none text-white"
               placeholder="Search todo..."
+              value={searchValue}
+              onChange={handleSearchChange}
             />
             <img className="w-8 ml-3" src="/search.svg" alt="" />
           </div>
           {/* todo task  */}
           <div className="mt-8">
-            {todos?.data?.map((todo: any) => (
-              <div
-                key={todo?.id}
-                className="py-5 bg-[#25273c] flex gap-3 px-3 rounded items-center border-b-2 border-gray-300 border-opacity-25 "
-              >
-                <input
-                  type="checkbox"
-                  name={`check-${todo.id}`}
-                  id={`check-${todo.id}`}
-                  checked={todo?.status === "completed"}
-                  onChange={() => handleCheckboxClick(todo.id)}
-                  className="cursor-pointer w-8 h-8 rounded-full appearance-none border-2 border-gray-300 checked:bg-blue-500 checked:border-transparent"
-                />
-                <p
-                  className={`text-[#A6ABD8] hover:text-white transition-all duration-100 ${
-                    todo?.status === "completed" ? "line-through" : ""
-                  }`}
+            <div className="w-full max-h-72 overflow-y-scroll">
+              {todos?.data?.map((todo: any) => (
+                <div
+                  key={todo?.id}
+                  className="py-5 bg-[#25273c] flex gap-3 px-3 rounded items-center border-b-2 border-gray-300 border-opacity-25 "
                 >
-                  {todo?.name}
-                </p>
-              </div>
-            ))}
+                  <input
+                    type="checkbox"
+                    name={`check-${todo.id}`}
+                    id={`check-${todo.id}`}
+                    checked={todo?.status === "completed"}
+                    onChange={() => handleCheckboxClick(todo.id)}
+                    className="cursor-pointer w-8 h-8 rounded-full appearance-none border-2 border-gray-300 checked:bg-blue-500 checked:border-transparent"
+                  />
+                  <p
+                    className={`text-[#A6ABD8] hover:text-white transition-all duration-100 ${
+                      todo?.status === "completed" ? "line-through" : ""
+                    }`}
+                  >
+                    {todo?.name}
+                  </p>
+                </div>
+              ))}
+            </div>
 
             {/* todo footer  */}
             <div className="py-5 bg-[#25273c] flex justify-between text-[#656680] gap-3 px-5 rounded items-center border-b-2 border-gray-300 border-opacity-25 ">
