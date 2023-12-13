@@ -1,5 +1,17 @@
+"use client";
+
+import React, { ChangeEvent, useState } from "react";
+
 /* eslint-disable @next/next/no-img-element */
 const Todo = () => {
+  const [active, setActive] = useState("all");
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setIsChecked(event.target.checked);
+    console.log("Checkbox status:", event.target.checked);
+  };
+
   return (
     <div className="w-full h-full relative">
       {/* bg image  */}
@@ -56,19 +68,45 @@ const Todo = () => {
                 type="checkbox"
                 name="check"
                 id="check"
+                checked={isChecked}
+                onChange={handleCheckboxChange}
                 className="cursor-pointer w-8 h-8 rounded-full appearance-none border-2 border-gray-300 checked:bg-blue-500 checked:border-transparent"
               />
-              <p className="text-[#A6ABD8] hover:text-white transition-all duration-100">
+              <p
+                className={`text-[#A6ABD8] hover:text-white transition-all duration-100 ${isChecked && 'line-through'}`}
+              >
                 This is a new todo
               </p>
             </div>
+
             {/* todo footer  */}
             <div className="py-5 bg-[#25273c] flex justify-between text-[#656680] gap-3 px-5 rounded items-center border-b-2 border-gray-300 border-opacity-25 ">
               <p>4 task left</p>
               <ul className="flex items-center gap-4">
-                <li>All</li>
-                <li>Active</li>
-                <li>Completed</li>
+                <li
+                  onClick={() => setActive("all")}
+                  className={`hover:text-blue-500 cursor-pointer ${
+                    active === "all" ? "text-blue-500 hover:text-blue-500" : "hover:text-white"
+                  }`}
+                >
+                  All
+                </li>
+                <li
+                  onClick={() => setActive("active")}
+                  className={`hover:text-blue-500 cursor-pointer ${
+                    active === "active" ? "text-blue-500 hover:text-blue-500" : "hover:text-white"
+                  }`}
+                >
+                  Active
+                </li>
+                <li
+                  onClick={() => setActive("completed")}
+                  className={`hover:text-blue-500 cursor-pointer ${
+                    active === "completed" ? "text-blue-500 hover:text-blue-500" : "hover:text-white"
+                  }`}
+                >
+                  Completed
+                </li>
               </ul>
               <p className="cursor-pointer">Clear Completed</p>
             </div>
