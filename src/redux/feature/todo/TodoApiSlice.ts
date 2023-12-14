@@ -1,9 +1,9 @@
 import { api } from "@/redux/api/apiSlice";
 
 const todoApi = api.injectEndpoints({
-  endpoints: (builder) => ({
+  endpoints: (builder: any) => ({
     createTodo: builder.mutation({
-      query: (todoData) => ({
+      query: (todoData: any) => ({
         url: "/api/v1/todos/create-todo",
         method: "POST",
         body: todoData,
@@ -16,12 +16,12 @@ const todoApi = api.injectEndpoints({
     }),
 
     getSingleTodo: builder.query({
-      query: (id) => `/api/v1/todos/${id}`,
+      query: (id: number) => `/api/v1/todos/${id}`,
       providesTags: ["Todo"],
     }),
 
     updateTodos: builder.mutation({
-      query: (todo) => ({
+      query: (todo: any) => ({
         url: `/api/v1/todos/${todo.id}`,
         method: "PATCH",
         body: todo,
@@ -29,7 +29,7 @@ const todoApi = api.injectEndpoints({
       invalidatesTags: ["Todo"],
     }),
     deleteTodo: builder.mutation({
-      query: (todoId) => ({
+      query: (todoId: any) => ({
         url: `/api/v1/todos/${todoId}`,
         method: "DELETE",
       }),
