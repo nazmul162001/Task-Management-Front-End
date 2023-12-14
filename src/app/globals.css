@@ -2,4 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+::-webkit-scrollbar {
+  display: none;
+}
 
+._action {
+  visibility: hidden;
+}
+._hover:hover ._action {
+  visibility: visible;
+}

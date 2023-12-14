@@ -2,11 +2,14 @@
 
 import {
   useCreateTodoMutation,
+  useDeleteTodoMutation,
   useGetTodoByCategoryQuery,
   useUpdateTodosMutation,
 } from "@/redux/feature/todo/TodoApiSlice";
 import React, { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
+import { FaEdit } from "react-icons/fa";
+import { MdOutlineDelete } from "react-icons/md";
 
 /* eslint-disable @next/next/no-img-element */
 const Todo = () => {
@@ -24,6 +27,7 @@ const Todo = () => {
 
   const [updateTodo] = useUpdateTodosMutation();
   const [createTodo] = useCreateTodoMutation();
+  const [deleteTodo] = useDeleteTodoMutation();
 
   // console.log(todos);
 
@@ -67,6 +71,22 @@ const Todo = () => {
     (todo: any) => todo.status === "active"
   ).length;
 
+  // handle update todo
+  const handleUpdateTodo = (id: any) => {
+    alert(id);
+  };
+
+  // handle delete todo
+  const handleDeleteTodo = async (id: any) => {
+    try {
+      refetch();
+      await deleteTodo(id).unwrap();
+      refetch();
+    } catch (error) {
+      console.error(`Failed to delete todo with ID ${id}:`, error);
+    }
+  };
+
   return (
     <div className="w-full h-full relative">
       {/* bg image  */}
@@ -100,7 +120,7 @@ const Todo = () => {
           {/* todo body  */}
           {/* add todo field  */}
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="py-5 bg-[#25273c] flex justify-between items-center gap-3 rounded">
+            <div className="py-5 bg-[#25273c] flex justify-between items-center gap-3 rounded-br-3xl rounded-bl-3xl">
               <img className="w-8 ml-3" src="/addCircle2.svg" alt="" />
               <input
                 {...register("name")} // Registering input with React Hook Form
@@ -111,7 +131,7 @@ const Todo = () => {
             </div>
           </form>
           {/* search todo  */}
-          <div className="py-4 mt-5 bg-[#25273c] flex justify-between items-center gap-3 rounded-full px-5">
+          <div className="py-4 mt-5 bg-[#25273c] flex justify-between items-center gap-3 rounded-tr-3xl rounded-tl-3xl px-5 mb-1">
             <input
               type="text"
               className="w-full bg-transparent border-none focus:outline-none text-white"
@@ -122,12 +142,12 @@ const Todo = () => {
             <img className="w-8 ml-3" src="/search.svg" alt="" />
           </div>
           {/* todo task  */}
-          <div className="mt-8">
-            <div className="w-full max-h-72 overflow-y-scroll">
+          <div className="">
+            <div className="w-full max-h-72 overflow-y-scroll scrollbar-hide">
               {todos?.data?.map((todo: any) => (
                 <div
                   key={todo?.id}
-                  className="py-5 bg-[#25273c] flex gap-3 px-3 rounded items-center border-b-2 border-gray-300 border-opacity-25 "
+                  className="py-5 bg-[#25273c] hover:bg-[#353752] flex gap-3 px-3 rounded items-center border-b-2 border-gray-300 border-opacity-25 relative _hover"
                 >
                   <input
                     type="checkbox"
@@ -144,6 +164,14 @@ const Todo = () => {
                   >
                     {todo?.name}
                   </p>
+                  <div className="flex gap-3 absolute right-3 w-16 h-full items-center _action">
+                    <span onClick={() => handleUpdateTodo(todo?.id)}>
+                      <FaEdit className="text-[#A6ABD8] text-2xl cursor-pointer" />
+                    </span>
+                    <span onClick={() => handleDeleteTodo(todo?.id)}>
+                      <MdOutlineDelete className="text-2xl text-red-500 cursor-pointer" />
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

@@ -69,4 +69,5 @@ export const {
   useGetTodoByCategoryQuery,
   useCreateTodoMutation,
   useUpdateTodosMutation,
+  useDeleteTodoMutation,
 } = todoApi;
