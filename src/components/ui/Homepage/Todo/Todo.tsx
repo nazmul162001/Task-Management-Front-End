@@ -27,6 +27,7 @@ const Todo = () => {
     search: searchValue,
   });
 
+
   const [updateTodo] = useUpdateTodosMutation();
   const [createTodo] = useCreateTodoMutation();
   const [deleteTodo] = useDeleteTodoMutation();
@@ -250,7 +251,7 @@ const Todo = () => {
                   Completed
                 </li>
               </ul>
-              <p className="cursor-pointer">Clear Completed</p>
+              {/* <p className="cursor-pointer">Clear Completed</p> */}
             </div>
           </div>
         </div>
