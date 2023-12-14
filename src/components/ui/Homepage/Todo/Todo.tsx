@@ -10,6 +10,8 @@ import React, { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaEdit } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
+//@ts-ignore
+import Swal from "sweetalert2";
 
 /* eslint-disable @next/next/no-img-element */
 const Todo = () => {
@@ -72,18 +74,55 @@ const Todo = () => {
   ).length;
 
   // handle update todo
-  const handleUpdateTodo = (id: any) => {
-    alert(id);
+  const handleUpdateTodo = (todoId: any) => {
+    const todoToUpdate = todos?.data?.find((todo: any) => todo.id === todoId);
+
+    Swal.fire({
+      title: "Update Todo",
+      input: "text",
+      inputValue: todoToUpdate?.name || "",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Update",
+      preConfirm: async (inputValue: any) => {
+        if (!inputValue || inputValue === todoToUpdate?.name) {
+          return;
+        }
+
+        try {
+          await updateTodo({
+            id: todoId,
+            name: inputValue,
+          });
+          refetch();
+          console.log("Updated name:", inputValue);
+        } catch (error) {
+          console.error("Failed to update:", error);
+        }
+      },
+    });
   };
 
   // handle delete todo
   const handleDeleteTodo = async (id: any) => {
-    try {
-      refetch();
-      await deleteTodo(id).unwrap();
-      refetch();
-    } catch (error) {
-      console.error(`Failed to delete todo with ID ${id}:`, error);
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You will not be able to recover this todo!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Delete!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        refetch();
+        await deleteTodo(id).unwrap();
+        refetch();
+      } catch (error) {
+        Swal.fire("Error", "Failed to delete todo", "error");
+      }
     }
   };
 
